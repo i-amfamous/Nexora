@@ -7,33 +7,82 @@
 
   /* --- Mobile Navigation --- */
 
-  const toggle = document.querySelector(".nav-toggle");
-  const mobileMenu = document.querySelector(".mobile-menu");
-  const mobileLinks = mobileMenu ? mobileMenu.querySelectorAll("a") : [];
+  var toggle = document.querySelector(".nav-toggle");
+  var mobileMenu = document.querySelector(".mobile-menu");
 
   if (toggle && mobileMenu) {
+    var links = mobileMenu.querySelectorAll("a");
+    var LABEL_OPEN = "Open menu";
+    var LABEL_CLOSE = "Close menu";
+
+    function isOpen() {
+      return mobileMenu.classList.contains("is-open");
+    }
+
+    function setMenu(open) {
+      mobileMenu.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? LABEL_CLOSE : LABEL_OPEN);
+    }
+
+    function closeMenu(returnFocus) {
+      if (!isOpen()) return;
+      setMenu(false);
+      if (returnFocus) toggle.focus();
+    }
+
     toggle.addEventListener("click", function () {
-      const isOpen = mobileMenu.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", String(isOpen));
+      setMenu(!isOpen());
     });
 
-    mobileLinks.forEach(function (link) {
+    links.forEach(function (link) {
       link.addEventListener("click", function () {
-        mobileMenu.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
+        closeMenu(false);
       });
     });
 
+    // Click anywhere outside the menu or the toggle
     document.addEventListener("click", function (e) {
-      if (
-        mobileMenu.classList.contains("is-open") &&
-        !mobileMenu.contains(e.target) &&
-        !toggle.contains(e.target)
-      ) {
-        mobileMenu.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
+      if (isOpen() && !mobileMenu.contains(e.target) && !toggle.contains(e.target)) {
+        closeMenu(false);
       }
     });
+
+    // Escape closes and returns focus to the button
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && isOpen()) {
+        e.preventDefault();
+        closeMenu(true);
+      }
+    });
+
+    // Trap Tab inside the menu while it is open
+    mobileMenu.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" || !isOpen()) return;
+
+      var focusable = [toggle].concat(Array.prototype.slice.call(links));
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    // Collapse automatically if the viewport grows past the breakpoint
+    var desktop = window.matchMedia("(min-width: 64.0625rem)");
+    var onBreakpoint = function (e) {
+      if (e.matches) closeMenu(false);
+    };
+    if (desktop.addEventListener) {
+      desktop.addEventListener("change", onBreakpoint);
+    } else if (desktop.addListener) {
+      desktop.addListener(onBreakpoint);
+    }
   }
 
   /* --- Scroll Reveal --- */
@@ -51,7 +100,7 @@
           observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.08, rootMargin: "0px 0px -4% 0px" }
     );
 
     revealTargets.forEach(function (el) {

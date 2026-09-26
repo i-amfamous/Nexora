@@ -59,4 +59,19 @@
   /* Layout */
   --max-width: 120rem;
   --nav-height: 7rem;
+
+  /* Gutter — scales down on small screens */
+  --gutter: clamp(1.6rem, 5vw, 6rem);
+
+  /* Tap targets are absolute ergonomic minimums, so they are declared in
+     px on purpose. In rem they would shrink along with the scaled-down
+     root font-size on small screens and stop being tappable. */
+  --tap-min: 44px;
+  --tap-min-sm: 36px;
+
+  /* Safe areas (notched phones, home indicator) */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
 }

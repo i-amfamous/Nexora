@@ -6,7 +6,7 @@
 
 .product-detail-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2.4rem;
 }
 
@@ -18,6 +18,8 @@
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
+  /* Keep deep links clear of the sticky nav */
+  scroll-margin-top: calc(var(--nav-height) + 2rem);
   transition: transform var(--duration-slow) var(--ease),
               box-shadow var(--duration-slow) var(--ease);
 }
@@ -42,6 +44,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;
   padding: 2.8rem;
 }
 
@@ -61,23 +64,25 @@
   padding-top: 2rem;
 }
 
-/* Stagger animation */
+/* Stagger animation. Disabled while filtering so toggling a filter
+   never leaves cards mid-transition. */
 .product-detail:nth-child(2) { transition-delay: 0.1s; }
 .product-detail:nth-child(3) { transition-delay: 0.2s; }
 .product-detail:nth-child(4) { transition-delay: 0.3s; }
 
+.product-detail-grid.is-filtering .product-detail {
+  transition-delay: 0s !important;
+}
+
 /* --- Product suite --- */
 
 .product-suite {
-  width: min(var(--max-width), 100%);
-  margin: 0 auto var(--space-3xl);
-  padding-right: clamp(2rem, 5vw, 6rem);
-  padding-left: clamp(2rem, 5vw, 6rem);
-  padding-top: var(--space-3xl);
+  margin-bottom: 0;
 }
 
 .product-suite .section-header p {
   max-width: 58rem;
+  margin-inline: auto;
   color: var(--ink-muted);
 }
 
@@ -87,19 +92,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 3rem;
-  width: min(var(--max-width), 100%);
-  margin: 0 auto var(--space-3xl);
-  box-sizing: border-box;
-  padding: 5rem clamp(2rem, 5vw, 6rem);
+  gap: clamp(2.4rem, 5vw, 4rem);
+  padding: clamp(2.8rem, 5vw, 5rem);
   background: var(--navy);
   color: #fff;
+}
+
+.product-principles-copy {
+  min-width: 0;
 }
 
 .product-principles h2 {
   max-width: 58rem;
   margin-bottom: 1rem;
-  font-size: clamp(2.8rem, 4vw, 4.4rem);
+  font-size: clamp(2.2rem, 4vw, 4.4rem);
   letter-spacing: -0.05em;
 }
 
@@ -108,17 +114,33 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.product-principles .btn {
+  flex: 0 0 auto;
+}
+
 /* --- Responsive --- */
 
 @media (max-width: 64rem) {
   .product-detail-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 48rem) {
-  .product-detail-grid {
-    grid-template-columns: 1fr;
+  .product-detail > img {
+    height: 20rem;
+  }
+
+  .product-detail-body {
+    padding: 1.8rem 1.6rem 2rem;
+  }
+
+  .product-detail-body h3 {
+    font-size: 2.1rem;
+  }
+
+  .product-detail-body p {
+    font-size: 1.4rem;
   }
 
   .product-principles {
@@ -126,11 +148,32 @@
     align-items: flex-start;
   }
 
+  .product-principles .btn {
+    width: 100%;
+  }
+
+  /* The table scrolls horizontally instead of crushing its cells */
+  .table-row > * {
+    padding: 1.2rem 1.4rem;
+  }
+
+  .table-hint {
+    display: flex;
+  }
+}
+
+@media (max-width: 36rem) {
+  .product-detail > img {
+    height: 17rem;
+  }
+
+  /* px, not rem — see the note on .data-table in components.css */
   .data-table {
-    font-size: 1.2rem;
+    min-width: 380px;
   }
 
   .table-row > * {
-    padding: 1rem 0.6rem;
+    padding: 1rem 0.8rem;
+    font-size: 1.3rem;
   }
 }

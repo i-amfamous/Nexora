@@ -65,13 +65,13 @@
 
 .milestone-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 2rem;
 }
 
 .milestone-item {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 1.8rem;
   padding-top: 1.4rem;
   border-top: 2px solid var(--brand);
@@ -104,7 +104,7 @@
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.6rem;
 }
 
@@ -151,34 +151,78 @@
 
 @media (max-width: 64rem) {
   .about-intro .split {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .about-intro .split-image {
-    height: 36rem;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .story {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .milestone-list,
-  .team-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .values .grid-3 {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 48rem) {
   .story-copy {
     columns: 1;
   }
 
   .milestone-list,
   .team-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .values .grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 48rem) {
+  .milestone-list,
+  .team-grid,
+  .values .grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .milestone-list {
+    gap: 1.6rem;
+  }
+
+  .team-grid {
+    gap: 1.2rem;
+  }
+
+  .team-member {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .team-member img {
+    height: 100%;
+    min-height: 11rem;
+  }
+
+  .team-member-body {
+    padding: 1.4rem 1.6rem;
+  }
+
+  .story {
+    gap: 1.6rem;
+    padding-block: var(--space-lg);
+  }
+}
+
+@media (max-width: 36rem) {
+  .about-intro .split-image {
+    aspect-ratio: 3 / 2;
+  }
+
+  .team-member {
+    grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+  }
+
+  .team-member img {
+    min-height: 9rem;
   }
 }

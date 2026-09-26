@@ -16,21 +16,31 @@
     learn: ["Nexora Learn", "Give learners a focused home for courses, video lessons, quizzes, and progress."]
   };
 
+  var lastFocused = null;
+
   /* --- Filter --- */
 
-  document.querySelectorAll(".filter-btn").forEach(function (btn) {
+  var filterBtns = document.querySelectorAll(".filter-btn");
+  var cards = document.querySelectorAll(".product-detail");
+  var grid = document.querySelector(".product-detail-grid");
+
+  filterBtns.forEach(function (btn) {
     btn.addEventListener("click", function () {
       var filter = btn.dataset.filter;
 
-      document.querySelectorAll(".filter-btn").forEach(function (b) {
+      filterBtns.forEach(function (b) {
         b.classList.toggle("is-active", b === btn);
         b.setAttribute("aria-pressed", String(b === btn));
       });
 
-      document.querySelectorAll(".product-detail").forEach(function (card) {
-        var isHidden = filter !== "all" && card.dataset.category !== filter;
-        card.classList.toggle("is-hidden", isHidden);
-        card.hidden = isHidden;
+      // Suppress the entrance stagger so filtered cards do not fade in
+      // one after another on every tap.
+      if (grid) grid.classList.add("is-filtering");
+
+      cards.forEach(function (card) {
+        var hide = filter !== "all" && card.dataset.category !== filter;
+        card.classList.toggle("is-hidden", hide);
+        card.hidden = hide;
       });
     });
   });
@@ -44,6 +54,7 @@
 
       modalTitle.textContent = data[0];
       modalCopy.textContent = data[1];
+      lastFocused = document.activeElement;
       modal.showModal();
     });
   });
@@ -54,6 +65,16 @@
   if (closeBtn) {
     closeBtn.addEventListener("click", function () {
       if (modal) modal.close();
+    });
+  }
+
+  // <dialog> fires "close" for the close button, Escape, and backdrop clicks
+  if (modal) {
+    modal.addEventListener("close", function () {
+      if (lastFocused && typeof lastFocused.focus === "function") {
+        lastFocused.focus();
+      }
+      lastFocused = null;
     });
   }
 })();
